@@ -546,7 +546,7 @@ function initializeBoard(board) {
 
 function playGame(game) {
     const PIECE_ANIMATION_DURATION = 50; // Match CSS transition duration
-    const TRAIL_FADEOUT_DURATION = 500;
+    const TRAIL_FADEOUT_DURATION = 10000;
     const TIMEOUT_BUFFER = 5;      // Additional buffer time
 
     let isPlayer1Turn = true;
@@ -615,8 +615,14 @@ function playGame(game) {
 
 
         function createAndAnimateTrail(moveFrom, moveTo) {
+            const trailHeight = 15;
             const trailElement = document.createElement('div');
             trailElement.classList.add('trail');
+            if (isPlayer1Turn) {
+                trailElement.classList.add('trail-player1');
+            } else {
+                trailElement.classList.add('trail-player2');
+            }
         
             const startX = moveFrom[1] * 60 + 30; // Center X of the start square
             const startY = moveFrom[0] * 60 + 30; // Center Y of the start square
@@ -631,20 +637,21 @@ function playGame(game) {
         
             // Position the trail at the starting point
             trailElement.style.left = `${startX}px`;
-            trailElement.style.top = `${startY}px`;
-        
+            trailElement.style.top = `${startY - trailHeight / 2}px`;
+
             // Set the width to the distance between the two points
             trailElement.style.width = `${distance}px`;
         
             // Rotate the trail to align with the movement direction
-            trailElement.style.transformOrigin = '0 0';
-            trailElement.style.transform = `
-                translate(0, -5px)
-                rotate(${angle}rad)
-            `;
+            trailElement.style.transformOrigin = '0% 50%';
+            trailElement.style.transform = `rotate(${angle}rad)`;
         
-            // Append the trail to the chessboard
-            chessboardElement.appendChild(trailElement);
+            const firstPieceElement = chessboardElement.querySelector('.piece');
+            if (firstPieceElement) {
+                chessboardElement.insertBefore(trailElement, firstPieceElement);
+            } else {
+                chessboardElement.appendChild(trailElement);
+            }
         
             // Start the fade-out animation
             setTimeout(() => {

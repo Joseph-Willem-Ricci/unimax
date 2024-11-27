@@ -11,7 +11,7 @@ body {
 }
 
 #chessboard {
-    position: relative; /* Make chessboard the positioning context */
+    position: relative;
     width: 480px;       /* 8 columns x 60px */
     height: 480px;      /* 8 rows x 60px */
 }
@@ -20,7 +20,7 @@ body {
     width: 60px;
     height: 60px;
     position: absolute;
-    z-index: 1;        /* Ensure squares are below pieces */
+    z-index: 1;
 }
 
 .piece {
@@ -30,19 +30,27 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute; /* Position pieces absolutely within the chessboard */
+    position: absolute;
     transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
-    z-index: 3;         /* Ensure pieces are above squares */
+    z-index: 2;
 }
 
 .trail {
     position: absolute;
-    height: 15px; /* Adjust thickness of the trail */
-    background: rgba(255, 165, 0, 0.6); /* Semi-transparent orange */
+    height: 15px;
     border-radius: 5px;
-    pointer-events: none; /* So it doesn't interfere with interactions */
-    transition: opacity 0.5s ease-out;
-    z-index: 2; /* Ensure it's below the piece */
+    pointer-events: none;
+    transition: opacity 10s ease-out;
+    z-index: 3;
+    opacity: 1;
+}
+
+.trail-player1 {
+    background: rgba(0, 0, 255, 0.6);
+}
+
+.trail-player2 {
+    background: rgba(255, 0, 0, 0.6);
 }
 
 .light-square {
