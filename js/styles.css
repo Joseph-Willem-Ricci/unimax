@@ -1,0 +1,71 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    background-color: #A5A5A5;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#chessboard {
+    position: relative;
+    width: 480px;       /* 8 columns x 60px */
+    height: 480px;      /* 8 rows x 60px */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    z-index: 1;
+}
+
+.piece {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
+    z-index: 3;
+}
+
+.trail {
+    position: absolute;
+    height: 60px;
+    border-radius: 30px;
+    pointer-events: none;
+    transition: opacity 100s ease-out;
+    z-index: 2;
+    opacity: .5;
+}
+
+.trail-player1 {
+    background: #C89F38;
+}
+
+.trail-player2 {
+    background: #9869b4;
+}
+
+.light-square {
+    background-color: #D5D5D5;
+}
+
+.dark-square {
+    background-color: #BDBDBD;
+}
+
+#game-info {
+    font-size: 18px;
+}
+
+#captured-pieces {
+    font-size: 16px;
+}
