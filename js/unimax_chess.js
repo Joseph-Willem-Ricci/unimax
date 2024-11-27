@@ -545,24 +545,24 @@ function initializeBoard(board) {
 }
 
 function playGame(game) {
-    const ANIMATION_DURATION = 50; // Match CSS transition duration
+    const PIECE_ANIMATION_DURATION = 50; // Match CSS transition duration
+    const TRAIL_FADEOUT_DURATION = 500;
     const TIMEOUT_BUFFER = 5;      // Additional buffer time
 
     let isPlayer1Turn = true;
     const capturedList = [];
     let moveCount = 0;
+    const chessboardElement = document.getElementById('chessboard');
+    const pieceElements = initializeBoard(game.getBoard());
     const turnInfoElement = document.getElementById('turn-info');
     const capturedPiecesElement = document.getElementById('captured-pieces');
 
-    // Initialize the board and get references to piece elements
-    const pieceElements = initializeBoard(game.getBoard());
 
     function updateGameInfo() {
         turnInfoElement.textContent = `Turn ${moveCount + 1}`;
         capturedPiecesElement.textContent = `Captured pieces: ${capturedList.join(' ')}`;
     }
 
-    // Initial update of game info
     updateGameInfo();
 
     function makeMove() {
@@ -571,13 +571,13 @@ function playGame(game) {
             return;
         }
 
+        // TODO: adjust unimax search depth. 2 = shallow/quick, 4 = deep/slow
         const bestMove = game.getBestMove(isPlayer1Turn, 3);
         if (!bestMove) {
             return;
         }
 
         const { moveFrom, moveTo } = bestMove;
-        const pieceMoving = game.getBoard()[moveFrom[0]][moveFrom[1]];
         const capturedPiece = game.getBoard()[moveTo[0]][moveTo[1]];
 
         // Perform the move in the game logic
@@ -592,12 +592,14 @@ function playGame(game) {
         if (capturedPiece) {
             const capturedPieceElement = pieceElements.get(toKey);
             if (capturedPieceElement) {
-                // Fade out the captured piece
                 capturedPieceElement.style.opacity = '0';
                 setTimeout(() => {
-                    capturedPieceElement.remove();
-                }, ANIMATION_DURATION);
-                // Remove from the map
+                    try {
+                        capturedPieceElement.remove();
+                    } catch (error) {
+                        console.error('Error removing captured piece:', error);
+                    }
+                }, PIECE_ANIMATION_DURATION);
                 pieceElements.delete(toKey);
             }
             capturedList.push(capturedPiece.toString());
@@ -611,13 +613,60 @@ function playGame(game) {
         pieceElement.style.left = `${moveTo[1] * 60}px`;
         pieceElement.style.top = `${moveTo[0] * 60}px`;
 
+
+        function createAndAnimateTrail(moveFrom, moveTo) {
+            const trailElement = document.createElement('div');
+            trailElement.classList.add('trail');
+        
+            const startX = moveFrom[1] * 60 + 30; // Center X of the start square
+            const startY = moveFrom[0] * 60 + 30; // Center Y of the start square
+            const endX = moveTo[1] * 60 + 30;     // Center X of the end square
+            const endY = moveTo[0] * 60 + 30;     // Center Y of the end square
+        
+            // Calculate the distance and angle
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            const distance = Math.hypot(deltaX, deltaY);
+            const angle = Math.atan2(deltaY, deltaX);
+        
+            // Position the trail at the starting point
+            trailElement.style.left = `${startX}px`;
+            trailElement.style.top = `${startY}px`;
+        
+            // Set the width to the distance between the two points
+            trailElement.style.width = `${distance}px`;
+        
+            // Rotate the trail to align with the movement direction
+            trailElement.style.transformOrigin = '0 0';
+            trailElement.style.transform = `
+                translate(0, -5px)
+                rotate(${angle}rad)
+            `;
+        
+            // Append the trail to the chessboard
+            chessboardElement.appendChild(trailElement);
+        
+            // Start the fade-out animation
+            setTimeout(() => {
+                trailElement.style.opacity = '0';
+            }, TIMEOUT_BUFFER); // Small delay to ensure the trail is rendered before fading
+        
+            // Remove the trail after the animation completes
+            setTimeout(() => {
+                trailElement.remove();
+            }, TRAIL_FADEOUT_DURATION + TIMEOUT_BUFFER);
+        }
+        
+        // Animate the piece's "trail"
+        createAndAnimateTrail(moveFrom, moveTo, chessboardElement);
+
         moveCount++;
         isPlayer1Turn = !isPlayer1Turn;
 
         updateGameInfo();
 
         // Schedule the next move after the animation completes
-        setTimeout(makeMove, ANIMATION_DURATION + TIMEOUT_BUFFER);
+        setTimeout(makeMove, PIECE_ANIMATION_DURATION + TIMEOUT_BUFFER);
     }
 
     // Start the game loop

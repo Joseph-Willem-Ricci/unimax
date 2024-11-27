@@ -32,7 +32,17 @@ body {
     align-items: center;
     position: absolute; /* Position pieces absolutely within the chessboard */
     transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
-    z-index: 2;         /* Ensure pieces are above squares */
+    z-index: 3;         /* Ensure pieces are above squares */
+}
+
+.trail {
+    position: absolute;
+    height: 15px; /* Adjust thickness of the trail */
+    background: rgba(255, 165, 0, 0.6); /* Semi-transparent orange */
+    border-radius: 5px;
+    pointer-events: none; /* So it doesn't interfere with interactions */
+    transition: opacity 0.5s ease-out;
+    z-index: 2; /* Ensure it's below the piece */
 }
 
 .light-square {
