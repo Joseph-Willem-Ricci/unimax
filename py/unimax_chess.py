@@ -189,7 +189,7 @@ class ChessGame(object):
     def __init__(self, board):
         self.is_being_played = False
         self.board = board
-        self.prev_states = set()
+        self.prev_states = set()  # so as to not move to any previously visited state
         if self.game_over():
             self.val = 0
         else:
@@ -199,9 +199,6 @@ class ChessGame(object):
 
     def get_board(self):
         return self.board
-
-    def reset(self):
-        self.board = copy.deepcopy(INIT_BOARD)
     
     def legal_moves(self, is_player1):
         for r in range(ROWS):
@@ -255,7 +252,6 @@ class Node(object):
         self.is_player1 = is_player1
         self.move = move
         self.best_move = None
-        self.num_leaf_nodes = 0
         self.val = 0
         self.depth = 0 if parent_node is None else parent_node.depth + 1
       
@@ -268,9 +264,7 @@ class Node(object):
             self.parent.best_move = self.move
 
     def should_prune(self):
-        if self.parent is not None and self.game.val >= self.parent.game.val:
-            return True
-        return False
+        return self.parent is not None and self.game.val >= self.parent.game.val
 
     def search_for_value(self, limit, move, root):
         if self.is_leaf(limit):

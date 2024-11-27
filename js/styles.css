@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #a7a7a7;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.light-square {
+    background-color: #d2d2d2;
+}
+
+.dark-square {
+    background-color: #f3eaec;
+}
+
+#game-info {
+    margin-top: 10px;
+}
+
+#captured-pieces {
+    margin-top: 10px;
+}
