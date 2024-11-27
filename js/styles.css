@@ -1,7 +1,7 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     text-align: center;
-    background-color: #a7a7a7;
+    background-color: #A5A5A5;
 }
 
 #game-container {
@@ -14,6 +14,7 @@ body {
     position: relative;
     width: 480px;       /* 8 columns x 60px */
     height: 480px;      /* 8 rows x 60px */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .square {
@@ -32,39 +33,39 @@ body {
     align-items: center;
     position: absolute;
     transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
-    z-index: 2;
+    z-index: 3;
 }
 
 .trail {
     position: absolute;
-    height: 15px;
-    border-radius: 5px;
+    height: 60px;
+    border-radius: 30px;
     pointer-events: none;
-    transition: opacity 10s ease-out;
-    z-index: 3;
-    opacity: 1;
+    transition: opacity 100s ease-out;
+    z-index: 2;
+    opacity: .5;
 }
 
 .trail-player1 {
-    background: rgba(0, 0, 255, 0.6);
+    background: #C89F38;
 }
 
 .trail-player2 {
-    background: rgba(255, 0, 0, 0.6);
+    background: #9869b4;
 }
 
 .light-square {
-    background-color: #d2d2d2;
+    background-color: #D5D5D5;
 }
 
 .dark-square {
-    background-color: #f3eaec;
+    background-color: #BDBDBD;
 }
 
 #game-info {
-    margin-top: 10px;
+    font-size: 18px;
 }
 
 #captured-pieces {
-    margin-top: 10px;
+    font-size: 16px;
 }

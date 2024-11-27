@@ -546,7 +546,7 @@ function initializeBoard(board) {
 
 function playGame(game) {
     const PIECE_ANIMATION_DURATION = 50; // Match CSS transition duration
-    const TRAIL_FADEOUT_DURATION = 10000;
+    const TRAIL_FADEOUT_DURATION = 100000;
     const TIMEOUT_BUFFER = 5;      // Additional buffer time
 
     let isPlayer1Turn = true;
@@ -615,7 +615,7 @@ function playGame(game) {
 
 
         function createAndAnimateTrail(moveFrom, moveTo) {
-            const trailHeight = 15;
+            const trailHeight = 60;
             const trailElement = document.createElement('div');
             trailElement.classList.add('trail');
             if (isPlayer1Turn) {
