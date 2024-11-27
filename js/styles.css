@@ -11,29 +11,28 @@ body {
 }
 
 #chessboard {
-    display: grid;
-    grid-template-columns: repeat(8, 60px);
-    grid-template-rows: repeat(8, 60px);
-    position: relative;
+    position: relative; /* Make chessboard the positioning context */
+    width: 480px;       /* 8 columns x 60px */
+    height: 480px;      /* 8 rows x 60px */
 }
 
 .square {
     width: 60px;
     height: 60px;
-    position: relative
+    position: absolute;
+    z-index: 1;        /* Ensure squares are below pieces */
 }
 
 .piece {
-    width: 100%;
-    height: 100%;
+    width: 60px;
+    height: 60px;
     font-size: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: absolute; /* Position pieces absolutely within the chessboard */
+    transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
+    z-index: 2;         /* Ensure pieces are above squares */
 }
 
 .light-square {

@@ -10,7 +10,6 @@ const ROOK_VAL = 5;
 const QUEEN_VAL = 9;
 const KING_VAL = 200;
 const MOVE_VAL_DENOMINATOR = 7.5; // ~ between preferring no capture vs preferring free movement
-const TIME_PER_MOVE = 300 // ms
 
 
 class Piece {
@@ -405,7 +404,6 @@ class ChessGame {
         }
         return new ChessGame(boardCopy);
     }
-    
 
     *successors(isPlayer1) {
         const moves = [...this.getLegalMoves(isPlayer1)];
@@ -493,21 +491,15 @@ function createChessGame() {
 
 // Initialize the game when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const game = createChessGame(); // Initialize your game logic here
+    const game = createChessGame();
     playGame(game);
 });
 
-/**
- * Initializes the chessboard and pieces on the board.
- * @param {Array} board - The initial state of the chessboard.
- * @returns {Array} - A 2D array containing references to the square elements.
- */
 function initializeBoard(board) {
     const chessboardElement = document.getElementById('chessboard');
-    const squareElements = []; // 2D array to keep track of square elements
 
+    // Create squares
     for (let row = 0; row < ROWS; row++) {
-        const rowElements = [];
         for (let col = 0; col < COLS; col++) {
             const square = document.createElement('div');
             square.classList.add('square');
@@ -518,40 +510,53 @@ function initializeBoard(board) {
                 square.classList.add('dark-square');
             }
 
+            // Position the square
+            square.style.left = `${col * 60}px`;
+            square.style.top = `${row * 60}px`;
+
+            chessboardElement.appendChild(square);
+        }
+    }
+
+    // Create pieces
+    const pieceElements = new Map(); // Map to keep track of piece elements
+
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
             const piece = board[row][col];
             if (piece) {
                 const pieceElement = document.createElement('div');
                 pieceElement.classList.add('piece');
-                pieceElement.textContent = piece.toString(); // Or use getUnicodePiece(piece)
-                square.appendChild(pieceElement);
-            }
+                pieceElement.textContent = piece.toString();
 
-            chessboardElement.appendChild(square);
-            rowElements.push(square);
+                // Position the piece
+                pieceElement.style.left = `${col * 60}px`;
+                pieceElement.style.top = `${row * 60}px`;
+
+                chessboardElement.appendChild(pieceElement);
+
+                // Store the piece element for later reference
+                pieceElements.set(`${row},${col}`, pieceElement);
+            }
         }
-        squareElements.push(rowElements);
     }
 
-    return squareElements;
+    return pieceElements;
 }
 
-/**
- * Runs the game loop, making moves and updating the UI.
- * @param {Object} game - The game instance containing the game logic.
- */
 function playGame(game) {
+    const ANIMATION_DURATION = 50; // Match CSS transition duration
+    const TIMEOUT_BUFFER = 5;      // Additional buffer time
+
     let isPlayer1Turn = true;
     const capturedList = [];
     let moveCount = 0;
     const turnInfoElement = document.getElementById('turn-info');
     const capturedPiecesElement = document.getElementById('captured-pieces');
 
-    // Initialize the board and get references to square elements
-    const squareElements = initializeBoard(game.getBoard());
+    // Initialize the board and get references to piece elements
+    const pieceElements = initializeBoard(game.getBoard());
 
-    /**
-     * Updates the game information displayed to the user.
-     */
     function updateGameInfo() {
         turnInfoElement.textContent = `Turn ${moveCount + 1}`;
         capturedPiecesElement.textContent = `Captured pieces: ${capturedList.join(' ')}`;
@@ -560,9 +565,6 @@ function playGame(game) {
     // Initial update of game info
     updateGameInfo();
 
-    /**
-     * Executes a move, updates the game state, and schedules the next move.
-     */
     function makeMove() {
         if (game.isGameOver()) {
             turnInfoElement.textContent = 'Game over';
@@ -582,36 +584,32 @@ function playGame(game) {
         game.performMove(moveFrom, moveTo);
 
         // Update the UI
-        const fromSquare = squareElements[moveFrom[0]][moveFrom[1]];
-        const toSquare = squareElements[moveTo[0]][moveTo[1]];
-        const pieceElement = fromSquare.querySelector('.piece');
+        const fromKey = `${moveFrom[0]},${moveFrom[1]}`;
+        const toKey = `${moveTo[0]},${moveTo[1]}`;
+        const pieceElement = pieceElements.get(fromKey);
 
         // Handle captured piece
         if (capturedPiece) {
-            const capturedPieceElement = toSquare.querySelector('.piece');
+            const capturedPieceElement = pieceElements.get(toKey);
             if (capturedPieceElement) {
                 // Fade out the captured piece
                 capturedPieceElement.style.opacity = '0';
                 setTimeout(() => {
-                    toSquare.removeChild(capturedPieceElement);
-                }, TIME_PER_MOVE);
+                    capturedPieceElement.remove();
+                }, ANIMATION_DURATION);
+                // Remove from the map
+                pieceElements.delete(toKey);
             }
             capturedList.push(capturedPiece.toString());
         }
 
-        // Animate the piece movement
-        const deltaX = (moveTo[1] - moveFrom[1]) * 60; // Calculate horizontal movement
-        const deltaY = (moveTo[0] - moveFrom[0]) * 60; // Calculate vertical movement
+        // Update the piece's position in the map
+        pieceElements.delete(fromKey);
+        pieceElements.set(toKey, pieceElement);
 
-        // Apply the transform to animate
-        pieceElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-
-        // After animation completes, reset the transform and move the piece element
-        setTimeout(() => {
-            pieceElement.style.transform = '';
-            fromSquare.removeChild(pieceElement);
-            toSquare.appendChild(pieceElement);
-        }, TIME_PER_MOVE);
+        // Animate the piece movement by changing 'left' and 'top'
+        pieceElement.style.left = `${moveTo[1] * 60}px`;
+        pieceElement.style.top = `${moveTo[0] * 60}px`;
 
         moveCount++;
         isPlayer1Turn = !isPlayer1Turn;
@@ -619,67 +617,10 @@ function playGame(game) {
         updateGameInfo();
 
         // Schedule the next move after the animation completes
-        setTimeout(makeMove, TIME_PER_MOVE);
+        setTimeout(makeMove, ANIMATION_DURATION + TIMEOUT_BUFFER);
     }
 
     // Start the game loop
     makeMove();
 }
 
-
-
-
-// function playGameInTerminal(game) {
-    //     let isPlayer1Turn = true;
-    //     const capturedList = [];
-    //     let moveCount = 0;
-    
-    //     // Function to print the board state
-    //     function printBoard(board) {
-    //         const columnLabels = '  a b c d e f g h';
-    //         console.log(columnLabels);
-    //         for (let rowIndex = 0; rowIndex < ROWS; rowIndex++) {
-    //             const row = board[rowIndex];
-    //             const rowNumber = 8 - rowIndex;
-    //             const rowString = row.map(piece => (piece ? piece.toString() : '.')).join(' ');
-    //             console.log(`${rowNumber} ${rowString}`);
-    //         }
-    //         console.log('');
-    //     }
-    
-    //     printBoard(game.getBoard());
-    
-    //     while (!game.isGameOver()) {
-    //         moveCount++;
-    
-    //         const bestMove = game.getBestMove(isPlayer1Turn, 2);  // NOTE: adjust depth limit
-    //         if (!bestMove) {
-    //             break;
-    //         }
-    
-    //         const { moveFrom, moveTo } = bestMove;
-    //         const pieceMoving = game.getBoard()[moveFrom[0]][moveFrom[1]];
-    //         const capturedPiece = game.getBoard()[moveTo[0]][moveTo[1]];
-    
-    //         game.performMove(moveFrom, moveTo);
-    
-    //         if (capturedPiece) {
-    //             capturedList.push(capturedPiece.toString());
-    //         }
-    
-    //         const fromCol = String.fromCharCode('a'.charCodeAt(0) + moveFrom[1]);
-    //         const fromRow = 8 - moveFrom[0];
-    //         const toCol = String.fromCharCode('a'.charCodeAt(0) + moveTo[1]);
-    //         const toRow = 8 - moveTo[0];
-    
-    //         printBoard(game.getBoard());
-    
-    //         isPlayer1Turn = !isPlayer1Turn;
-    //     }
-    
-    //     console.log('Game over');
-    //     console.log(`Captured pieces: ${capturedList.join(' ')}`);
-    // }
-// // Create a new chess game instance and play
-// const game = createChessGame();
-// playGameLocal(game);
