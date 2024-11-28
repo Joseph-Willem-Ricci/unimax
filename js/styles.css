@@ -28,11 +28,14 @@ body {
     width: 60px;
     height: 60px;
     font-size: 36px;
+    font-family: 'DejaVu Sans', 'Segoe UI Symbol', 'Noto Sans Symbols', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
     transition: left 0.05s ease, top 0.05s ease, opacity 0.05s ease;
+    line-height: 1;
+    text-align: center;
     z-index: 3;
 }
 
@@ -41,9 +44,9 @@ body {
     height: 60px;
     border-radius: 30px;
     pointer-events: none;
-    transition: opacity 100s ease-out;
+    transition: opacity 15s ease-out;
     z-index: 2;
-    opacity: .5;
+    opacity: .3;
 }
 
 .trail-player1 {
