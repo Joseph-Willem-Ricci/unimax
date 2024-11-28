@@ -9,7 +9,7 @@ const BISHOP_VAL = 3;
 const ROOK_VAL = 5;
 const QUEEN_VAL = 9;
 const KING_VAL = 200;
-const MOVE_VAL_DENOMINATOR = 7.5; // ~ between preferring no capture vs preferring free movement
+const MOVE_VAL_DENOMINATOR = 9; // ~ between preferring no capture vs preferring free movement
 
 
 class Piece {
