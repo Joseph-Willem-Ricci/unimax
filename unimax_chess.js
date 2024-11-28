@@ -545,9 +545,9 @@ function initializeBoard(board) {
 }
 
 function playGame(game) {
-    const PIECE_ANIMATION_DURATION = 50; // Match CSS transition duration
-    const TRAIL_FADEOUT_DURATION = 100000;
-    const TIMEOUT_BUFFER = 5;      // Additional buffer time
+    const PIECE_ANIMATION_DURATION_MS = 50; // TODO: Match CSS
+    const TRAIL_FADEOUT_DURATION_MS = 15000;
+    const TIMEOUT_BUFFER_MS = 20;
 
     let isPlayer1Turn = true;
     const capturedList = [];
@@ -599,7 +599,7 @@ function playGame(game) {
                     } catch (error) {
                         console.error('Error removing captured piece:', error);
                     }
-                }, PIECE_ANIMATION_DURATION);
+                }, PIECE_ANIMATION_DURATION_MS);
                 pieceElements.delete(toKey);
             }
             capturedList.push(capturedPiece.toString());
@@ -656,12 +656,12 @@ function playGame(game) {
             // Start the fade-out animation
             setTimeout(() => {
                 trailElement.style.opacity = '0';
-            }, TIMEOUT_BUFFER); // Small delay to ensure the trail is rendered before fading
+            }, TIMEOUT_BUFFER_MS); // Small delay to ensure the trail is rendered before fading
         
             // Remove the trail after the animation completes
             setTimeout(() => {
                 trailElement.remove();
-            }, TRAIL_FADEOUT_DURATION + TIMEOUT_BUFFER);
+            }, TRAIL_FADEOUT_DURATION_MS + TIMEOUT_BUFFER_MS);
         }
         
         // Animate the piece's "trail"
@@ -673,7 +673,7 @@ function playGame(game) {
         updateGameInfo();
 
         // Schedule the next move after the animation completes
-        setTimeout(makeMove, PIECE_ANIMATION_DURATION + TIMEOUT_BUFFER);
+        setTimeout(makeMove, PIECE_ANIMATION_DURATION_MS + TIMEOUT_BUFFER_MS);
     }
 
     // Start the game loop
